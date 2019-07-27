@@ -1,0 +1,122 @@
+#!/bin/bash
+let NUM1=$RANDOM%10
+let NUM2=$RANDOM%10
+while [ $NUM1 -eq $NUM2 ] 
+do
+	let NUM2=$RANDOM%10 
+done
+let NUM3=$RANDOM%10
+
+while [ true ]
+do
+	if [ $NUM1 -ne $NUM3 ]
+	then
+		if [ $NUM2 -ne $NUM3 ]
+		then
+			break
+		fi
+	fi		
+	let NUM3=$RANDOM%10
+done
+
+let St=0
+let Ba=0
+let Out=0
+let loo=10
+
+echo 'Number BaseBall' > temp
+
+clear
+Start_Time=`date`
+while [ $loo -ge 0 ]
+do
+	echo "$NUM1 $NUM2 $NUM3"
+	echo "Remaining Chance : $loo"
+	echo 'input three number(0~9)'
+	read A B C
+	St=0;Ba=0;Out=0
+	for i in $A $B $C
+	do
+		err=0
+		if [ $i -gt 9 ]
+		then
+			err=1
+		elif [ $i -lt 0 ]
+		then
+			err=1
+		fi
+	done
+	
+	if [ $err -eq 1 ]
+	then
+		echo 'Range Over!!'
+	elif [ $A -eq $B ]
+	then
+		echo 'Duplicate number'
+	elif [ $B -eq $C ]
+	then
+		echo 'Duplicate number'
+	elif [ $C -eq $A ]
+	then
+		echo 'Duplicate number'
+	else
+		for i in $A $B $C
+		do
+			if [ $i -eq $NUM1 ]
+			then
+				if [ $NUM1 -eq $A ]
+				then
+					let St=$St+1
+				else
+					let Ba=$Ba+1
+				fi
+			elif [ $i -eq $NUM2 ]
+			then
+				if [ $NUM2 -eq $B ]
+				then
+					let St=$St+1
+				else
+					let Ba=$Ba+1
+				fi
+			elif [ $i -eq $NUM3 ]
+			then
+				if [ $NUM3 -eq $C ]
+				then
+					let St=$St+1
+				else
+					let Ba=$Ba+1
+				fi
+			else
+				let Out=$Out+1
+			fi	
+		done
+
+		loo=`expr $loo - 1`
+	
+		clear
+		echo "$A $B $C : $St Strike, $Ba bal, $Out out" >> temp
+		cat temp
+		if [ $St -eq 3 ]
+		then
+			echo 'Good job!'
+			break
+		fi
+	fi
+done
+
+if [ $loo -lt 0 ]
+then
+	echo 'lose!!!!'
+fi
+End_Time=`date`
+echo 'Do you want to save the game result?(y/n)'
+read ans
+if [[ $ans = y || $ans = Y ]]
+then
+	echo "Start : ${Start_Time}" >> temp
+	echo "End : ${End_Time}" >> temp
+	let num=`ls -l | wc -l`\-2
+	mv temp "${num}_game_result_data"
+else
+	rm temp
+fi
